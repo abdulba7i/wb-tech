@@ -1,0 +1,26 @@
+env: "local"
+
+http_server:
+  address: "0.0.0.0:8080"
+  timeout: "10s"
+  idle_timeout: "60s"
+  user: "${HTTP_USER}"
+  password: "${HTTP_PASSWORD}"
+
+database:
+  host: "${DB_HOST}"
+  port: "${DB_PORT}"
+
+  user: "${DB_USER}"
+  password: "${DB_PASSWORD}"
+  dbname: "${DB_NAME}"
+  sslmode: "disable"
+
+kafka: 
+  address: "${KAFKA_ADDRESS_1}"
+  topic: "${TOPIC}"
+  group: "${GROUP}"
+
+migrations:
+  dir: "./migrations"
+  table: "schema_migrations"
