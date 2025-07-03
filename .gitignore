@@ -1,0 +1,7 @@
+*.test
+.env
+
+./docker-compose/.data
+./.idea
+./config/nginx/certs
+./config/redis/
