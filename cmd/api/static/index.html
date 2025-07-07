@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Поиск заказа</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        #result { white-space: pre; background: #f4f4f4; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h2>Поиск заказа по ID</h2>
+    <input type="text" id="orderId" placeholder="Введите order_uid" style="width: 300px;">
+    <button onclick="findOrder()">Найти</button>
+    <div id="result"></div>
+    <script>
+        function getOrderUidFromUrl() {
+            const match = window.location.pathname.match(/^\/order\/(.+)$/);
+            return match ? match[1] : null;
+        }
+        function findOrder(uid) {
+            const orderUid = uid || document.getElementById('orderId').value.trim();
+            const resultDiv = document.getElementById('result');
+            if (!orderUid) {
+                resultDiv.textContent = 'Введите order_uid';
+                return;
+            }
+            resultDiv.textContent = 'Загрузка...';
+            fetch(`/api/order/${orderUid}`)
+                .then(r => {
+                    if (!r.ok) throw new Error('Не найдено');
+                    return r.json();
+                })
+                .then(data => {
+                    resultDiv.textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(() => {
+                    resultDiv.textContent = 'Заказ не найден';
+                });
+        }
+        // Если открыли /order/<order_uid> — сразу ищем заказ
+        const urlOrderUid = getOrderUidFromUrl();
+        if (urlOrderUid) {
+            document.getElementById('orderId').value = urlOrderUid;
+            findOrder(urlOrderUid);
+        }
+    </script>
+</body>
+</html> 
