@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type Order struct {
 	OrderUID          string   `json:"order_uid"`
 	TrackNumber       string   `json:"track_number"`
@@ -13,6 +15,7 @@ type Order struct {
 	DeliveryService   string   `json:"delivery_service"`
 	ShardKey          string   `json:"shardkey"`
 	SMID              int      `json:"sm_id"`
-	DateCreated       string   `json:"date_created"`
-	OOFShard          string   `json:"oof_shard"`
+	// DateCreated       string   `json:"date_created"`
+	DateCreated time.Time `json:"date_created"`
+	OOFShard    string    `json:"oof_shard"`
 }
