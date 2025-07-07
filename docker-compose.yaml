@@ -58,6 +58,78 @@ services:
     networks:
       - kafka-net
 
+  kafka-init:
+    image: confluentinc/cp-kafka:7.7.1
+    depends_on:
+      - kafka
+    entrypoint: ["/bin/sh", "-c", "kafka-topics --create --if-not-exists --bootstrap-server kafka:29092 --replication-factor 1 --partitions 1 --topic wb-tech-topic"]
+    networks:
+      - kafka-net
+
+  # emulator-script:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   image: wb-tech:latest
+  #   command: ["/bin/emulator-script"]
+  #   depends_on:
+  #     kafka-init:
+  #       condition: service_completed_successfully
+  #     postgres:
+  #       condition: service_healthy
+  #   environment:
+  #     - KAFKA_ADDRESS=kafka:29092
+  #     - TOPIC=wb-tech-topic
+  #     - DB_HOST=postgres
+  #     - DB_PORT=5432
+  #     - DB_USER=postgres
+  #     - DB_PASSWORD=postgres
+  #     - DB_NAME=wb-tech
+  #   networks:
+  #     - kafka-net
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: wb-tech:latest
+    command: ["./api"]
+    depends_on:
+      - emulator-script
+      - redis
+      - kafka
+      - postgres
+    ports:
+      - "8081:8081"
+    environment:
+      - KAFKA_ADDRESS=kafka:29092
+      - TOPIC=wb-tech-topic
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=wb-tech
+    networks:
+      - kafka-net
+
+  postgres:
+    image: postgres:14.5-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    ports:
+      - 5431:5432
+
 networks:
   kafka-net:
     driver: bridge
+
+volumes:
+  pgdata:

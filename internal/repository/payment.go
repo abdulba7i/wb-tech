@@ -52,14 +52,7 @@ func (s *Storage) GetPaymentByID(tx *sql.Tx, id int64) (*model.Payment, error) {
         FROM payment WHERE id = $1`
 	var payment model.Payment
 
-	var row *sql.Row
-	if tx != nil {
-		row = tx.QueryRow(query, id)
-	} else {
-		row = s.db.QueryRow(query, id)
-	}
-
-	err := row.Scan(
+	err := tx.QueryRow(query, id).Scan(
 		&payment.Transaction,
 		&payment.RequestID,
 		&payment.Currency,
