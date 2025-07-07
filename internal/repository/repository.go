@@ -1,14 +1,17 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"wb-tech/internal/model"
 )
 
 type Order interface {
 	CreateOrder(ordr model.Order) error
-	// GetOrderById(id string) (*model.Order, error)
-	// getOrderMainInfo(orderUID string) (*model.Order, error)
+	GetOrderByUID(uid string) (*model.Order, error)
+	GetAllOrders(ctx context.Context) ([]model.Order, error)
+	GetAllBasicOrders(ctx context.Context) ([]model.Order, error)
+	getOrderFromDB(orderUID string) (*model.Order, int64, int64, error)
 }
 
 type Payment interface {

@@ -18,12 +18,6 @@ func NewItemsRepository(db *sql.DB) ItemsRepository {
 func (s *Storage) AddItems(tx *sql.Tx, order_uid string, items []model.Item) error {
 	const op = "repository.postgres.AddItems"
 
-	tx, err := s.db.Begin()
-	if err != nil {
-		return fmt.Errorf("%s: error to begin transaction: %w", op, err)
-	}
-	defer tx.Rollback()
-
 	query := `INSERT INTO items (order_uid, chrt_id, track_number, price, rid, name, sale, 
 		size, total_price, nm_id, brand, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`
 
@@ -35,10 +29,6 @@ func (s *Storage) AddItems(tx *sql.Tx, order_uid string, items []model.Item) err
 		}
 	}
 
-	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("%s: error to commit transaction: %w", op, err)
-	}
-
 	return nil
 }
 
@@ -46,7 +36,13 @@ func (s *Storage) GetItemsByOrderUID(tx *sql.Tx, orderUID string) ([]model.Item,
 	const op = "repository.postgres.GetItemsByOrderUID"
 
 	query := `SELECT * FROM items WHERE order_uid = $1`
-	rows, err := tx.Query(query, orderUID)
+	var rows *sql.Rows
+	var err error
+	if tx != nil {
+		rows, err = tx.Query(query, orderUID)
+	} else {
+		rows, err = s.db.Query(query, orderUID)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to get items: %w", err)
 	}

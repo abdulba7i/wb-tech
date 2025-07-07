@@ -37,11 +37,17 @@ func (s *Storage) AddDelivery(tx *sql.Tx, delivery model.Delivery) (int64, error
 func (s *Storage) GetDeliveryByID(tx *sql.Tx, id int64) (*model.Delivery, error) {
 	const op = "repository.postgres.GetDeliveryByID"
 
+	query := `SELECT name, phone, zip, city, address, region, email FROM delivery WHERE id = $1`
 	var delivery model.Delivery
 
-	query := `SELECT * FROM delivery WHERE id = $1`
+	var row *sql.Row
+	if tx != nil {
+		row = tx.QueryRow(query, id)
+	} else {
+		row = s.db.QueryRow(query, id)
+	}
 
-	err := tx.QueryRow(query, id).Scan(
+	err := row.Scan(
 		&delivery.Name,
 		&delivery.Phone,
 		&delivery.Zip,
@@ -52,7 +58,7 @@ func (s *Storage) GetDeliveryByID(tx *sql.Tx, id int64) (*model.Delivery, error)
 	)
 
 	if err != nil {
-		return nil, fmt.Errorf("%s: failed to get model delivery: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	return &delivery, nil
 }
