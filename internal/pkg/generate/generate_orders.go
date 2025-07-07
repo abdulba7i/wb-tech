@@ -7,7 +7,9 @@ import (
 	"wb-tech/internal/model"
 )
 
-func GenerateTestOrder(id int) model.Order {
+func GenerateTestOrder() model.Order {
+	id := time.Now().Unix()
+
 	now := time.Now().UTC()
 
 	return model.Order{
@@ -35,7 +37,7 @@ func GenerateTestOrder(id int) model.Order {
 		},
 		Items: []model.Item{
 			{
-				ChrtID:      9934930 + id,
+				ChrtID:      9934930 + int(id),
 				TrackNumber: fmt.Sprintf("WBILMTESTTRACK%d", id),
 				Price:       453,
 				RID:         fmt.Sprintf("ab4219087a764ae0btest%d", id),
@@ -43,11 +45,18 @@ func GenerateTestOrder(id int) model.Order {
 				Sale:        30,
 				Size:        "0",
 				TotalPrice:  317,
-				NMID:        2389212 + id,
+				NMID:        2389212 + int(id),
 				Brand:       "Vivienne Sabo",
 				Status:      202,
 			},
 		},
-		DateCreated: now.Format(time.RFC3339),
+		Locale:            "en",
+		InternalSignature: "",
+		CustomerID:        "test",
+		DeliveryService:   "meest",
+		ShardKey:          "9",
+		SMID:              99,
+		DateCreated:       now,
+		OOFShard:          "1",
 	}
 }
