@@ -39,3 +39,4 @@ REDIS_PASSWORD=
 
 --- 
 ### Видеоинтерфейс запуска
+https://github.com/user-attachments/assets/b48d325c-b3ef-4610-b912-69f32821bda2
