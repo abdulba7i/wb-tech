@@ -22,7 +22,6 @@ func main() {
 	defer logger.Sync()
 
 	if err := godotenv.Load("./.env"); err != nil {
-		// if err := godotenv.Load("../../.env"); err != nil {
 		logger.Log.Panic("No .env file found")
 	}
 

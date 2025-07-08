@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -12,16 +11,14 @@ import (
 )
 
 func main() {
-	// err := godotenv.Load("../../.env")
-	err := godotenv.Load("./.env")
-
+	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Ошибка загрузки .env файла: %v", err)
+		log.Fatalf("Error loading .env file: %v", err)
 	}
 
-	fmt.Println("Kafka address:", os.Getenv("KAFKA_ADDRESS"))
+	topic := os.Getenv("TOPIC")
+	producer, err := kafka.NewProducer("localhost:9092")
 
-	producer, err := kafka.NewProducer(os.Getenv("KAFKA_ADDRESS"))
 	if err != nil {
 		log.Fatalf("Error with create producer: %v", err)
 	}
@@ -31,7 +28,8 @@ func main() {
 		order := generate.GenerateTestOrder()
 		currentTime := time.Now().UTC()
 
-		err := producer.Produce(order, os.Getenv("TOPIC"), order.OrderUID, currentTime)
+		err := producer.Produce(order, topic, order.OrderUID, currentTime)
+
 		if err != nil {
 			log.Printf("Error sending order: %v", err)
 			continue
