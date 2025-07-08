@@ -1,7 +1,7 @@
 env: "local"
 
 http_server:
-  address: "0.0.0.0:8080"
+  address: "127.0.0.1:8001"
   timeout: "10s"
   idle_timeout: "60s"
   user: "${HTTP_USER}"
@@ -16,13 +16,8 @@ database:
   dbname: "${DB_NAME}"
   sslmode: "disable"
 
-# kafka: 
-#   address: "${KAFKA_ADDRESS}"
-#   topic: "${TOPIC}"
-#   group: "${GROUP}"
-
 kafka: 
-  address: "localhost:9092"
+  address: "kafka:29092"
   topic: "wb-tech-topic"
   group: "wb-tech-consumer-group"
 
@@ -31,7 +26,7 @@ migrations:
   table: "schema_migrations"
 
 redis:
-host: "${REDIS_HOST}"
-port: "${REDIS_PORT}"
-password: "${REDIS_PASSWORD}"
-db: ${REDIS_DB}
+  host: "redis"
+  port: "6379"
+  password: ""
+  db: 0
