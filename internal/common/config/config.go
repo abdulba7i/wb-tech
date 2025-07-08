@@ -35,10 +35,8 @@ type Database struct {
 }
 
 type Redis struct {
-	Address  string `yaml:"address"`
 	Host     string `yaml:"host"`
 	Port     string `yaml:"port"`
-	User     string `yaml:"user"`
 	Password string `yaml:"password"`
 	DB       int    `yaml:"db"`
 }
@@ -51,7 +49,6 @@ type Kafka struct {
 
 func MustLoad() *Config {
 	configPath := filepath.Join("./config.yaml")
-	// configPath := filepath.Join("..", "..", "config.yaml")
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		log.Fatalf("config file %s does not exist", configPath)
