@@ -39,9 +39,12 @@ services:
     image: redis:7.2
     container_name: redis
     ports:
-      - "6380:6379" 
-    # networks:
-    #   - kafka-net
+      - "6380:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - kafka-net
+
 
   kafka-ui:
     container_name: kafka-ui
@@ -66,49 +69,30 @@ services:
     networks:
       - kafka-net
 
-  # emulator-script:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   image: wb-tech:latest
-  #   command: ["/bin/emulator-script"]
-  #   depends_on:
-  #     kafka-init:
-  #       condition: service_completed_successfully
-  #     postgres:
-  #       condition: service_healthy
-  #   environment:
-  #     - KAFKA_ADDRESS=kafka:29092
-  #     - TOPIC=wb-tech-topic
-  #     - DB_HOST=postgres
-  #     - DB_PORT=5432
-  #     - DB_USER=postgres
-  #     - DB_PASSWORD=postgres
-  #     - DB_NAME=wb-tech
-  #   networks:
-  #     - kafka-net
-
   api:
     build:
       context: .
       dockerfile: Dockerfile
     image: wb-tech:latest
-    command: ["./api"]
+    command: ["./wait-for-it.sh", "kafka:29092", "-t", "60", "--", "./wait-for-it.sh", "postgres:5432", "-t", "30", "--", "./api"]
     depends_on:
-      - emulator-script
       - redis
       - kafka
       - postgres
     ports:
       - "8081:8081"
     environment:
-      - KAFKA_ADDRESS=kafka:29092
-      - TOPIC=wb-tech-topic
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=wb-tech
+      KAFKA_ADDRESS: kafka:29092
+      TOPIC: wb-tech-topic
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      REDIS_DB: 0
     networks:
       - kafka-net
 
@@ -126,10 +110,12 @@ services:
       timeout: 10s
     ports:
       - 5431:5432
+    networks:
+    - kafka-net
+
+volumes:
+  redis-data:
 
 networks:
   kafka-net:
     driver: bridge
-
-volumes:
-  pgdata:

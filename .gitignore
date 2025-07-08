@@ -5,3 +5,5 @@
 ./.idea
 ./config/nginx/certs
 ./config/redis/
+
+.vscode/
