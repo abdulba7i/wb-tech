@@ -30,7 +30,7 @@ func (s *Storage) AddPayment(tx *sql.Tx, payment model.Payment) (int64, error) {
 		payment.Currency,
 		payment.Provider,
 		payment.Amount,
-		payment.PaymentDT, // <- ЭТОТ параметр был пропущен
+		payment.PaymentDT,
 		payment.Bank,
 		payment.DeliveryCost,
 		payment.GoodsTotal,
@@ -52,7 +52,14 @@ func (s *Storage) GetPaymentByID(tx *sql.Tx, id int64) (*model.Payment, error) {
         FROM payment WHERE id = $1`
 	var payment model.Payment
 
-	err := tx.QueryRow(query, id).Scan(
+	var row *sql.Row
+	if tx != nil {
+		row = tx.QueryRow(query, id)
+	} else {
+		row = s.db.QueryRow(query, id)
+	}
+
+	err := row.Scan(
 		&payment.Transaction,
 		&payment.RequestID,
 		&payment.Currency,

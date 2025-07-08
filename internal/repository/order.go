@@ -47,14 +47,6 @@ func (s *Storage) CreateOrder(ordr model.Order) error {
 		return fmt.Errorf("%s: failed to add payment: %w", op, err)
 	}
 
-	// query := `INSERT INTO orders
-	// 	(order_uid, track_number, entry, delivery_id, payment_id, locale, internal_signature, customer_id, delivery_service, shardkey, sm_id, oof_shard)
-	// 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-	// `
-
-	// _, err = tx.Exec(query, ordr.OrderUID, ordr.TrackNumber, ordr.Entry, idDelivery, idPayment, ordr.Locale,
-	// 	ordr.InternalSignature, ordr.CustomerID, ordr.DeliveryService, ordr.ShardKey, ordr.SMID, ordr.OOFShard)
-
 	query := `INSERT INTO orders
 	(order_uid, track_number, entry, delivery_id, payment_id, locale, internal_signature, customer_id, 
 	delivery_service, shardkey, sm_id, date_created, oof_shard)
@@ -72,7 +64,7 @@ func (s *Storage) CreateOrder(ordr model.Order) error {
 		ordr.DeliveryService,
 		ordr.ShardKey,
 		ordr.SMID,
-		ordr.DateCreated, // <-- добавлено!
+		ordr.DateCreated,
 		ordr.OOFShard,
 	)
 

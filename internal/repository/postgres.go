@@ -48,7 +48,6 @@ func Connect(cfg config.Database) (*Storage, error) {
 	}
 
 	migrationsDir, err := filepath.Abs("./migrations")
-	// migrationsDir, err := filepath.Abs("../../migrations")
 	if err != nil {
 		return nil, fmt.Errorf("%s: failed to get migrations path: %w", op, err)
 	}
